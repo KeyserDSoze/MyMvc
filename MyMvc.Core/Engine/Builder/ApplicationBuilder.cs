@@ -12,7 +12,7 @@ namespace MyMvc.Core
             => this.DIMvc = dIMvc;
 
         private static readonly IList<IMiddlewareWrapper> Middlewares = new List<IMiddlewareWrapper>();
-        public void AddMiddleware<TMiddleware>() where TMiddleware : IMiddleware 
+        public void UseMiddleware<TMiddleware>() where TMiddleware : IMiddleware 
             => Middlewares.Add(new MiddlewareWrapper<TMiddleware>(this.DIMvc.ServiceFactory));
 
         public async Task Next(HttpContext httpContext)

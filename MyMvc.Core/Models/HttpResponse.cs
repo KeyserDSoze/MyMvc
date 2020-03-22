@@ -14,7 +14,7 @@ namespace MyMvc.Core
         public int? CacheControl { get; set; }
         public int StatusCode { get; set; } = 200;
         internal byte[] Fetch()
-            => GetHeader().Concat(this.Body).ToArray();
+            => this.Body == null ? GetHeader() : GetHeader().Concat(this.Body).ToArray();
         private byte[] GetHeader()
         {
             StringBuilder stringBuilder = new StringBuilder();

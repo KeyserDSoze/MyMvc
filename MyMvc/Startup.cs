@@ -1,4 +1,6 @@
 ﻿using MyMvc.Core;
+using MyMvc.MyMiddleware;
+using MyMvc.MyService;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,11 +11,14 @@ namespace MyMvc
     {
         public void ConfigureServices(IServiceCollection serviceCollection)
         {
-            throw new NotImplementedException();
+            serviceCollection.AddScoped<MyFirstService>();
+            serviceCollection.AddScoped<MyFirstMiddleware>();
         }
         public void Configure(IApplicationBuilder applicationBuilder)
         {
-            throw new NotImplementedException();
+            applicationBuilder.UseStaticFiles();
+            applicationBuilder.UseMiddleware<MyFirstMiddleware>();
+            applicationBuilder.UseMvc();
         }
     }
 }

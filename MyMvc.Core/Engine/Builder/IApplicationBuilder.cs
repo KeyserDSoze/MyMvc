@@ -7,10 +7,17 @@ namespace MyMvc.Core
 {
     public interface IApplicationBuilder
     {
-        void AddMiddleware<TMiddleware>() where TMiddleware : IMiddleware;
+        void UseMiddleware<TMiddleware>() where TMiddleware : IMiddleware;
     }
     public interface IApplicationStarter
     {
         Task Next(HttpContext httpContext);
+    }
+    public static class ApplicationBuilderExtensions 
+    {
+        public static void UseStaticFiles(this IApplicationBuilder applicationBuilder) 
+            => applicationBuilder.UseMiddleware<StaticFiles>();
+        public static void UseMvc(this IApplicationBuilder applicationBuilder) 
+            => applicationBuilder.UseMiddleware<Mvc>();
     }
 }

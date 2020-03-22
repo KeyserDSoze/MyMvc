@@ -20,6 +20,9 @@ namespace MyMvc.Core
         }
         public IHostBuilder Build()
         {
+            //preconfigured services, similar to ILog or etc.
+            MyDIMvc.Instance.ServiceCollection.AddSingleton<StaticFiles>();
+            MyDIMvc.Instance.ServiceCollection.AddScoped<Mvc>();
             this.Startup.ConfigureServices(MyDIMvc.Instance.ServiceCollection);
             this.Startup.Configure(MyDIMvc.Instance.ApplicationBuilder);
             return this;

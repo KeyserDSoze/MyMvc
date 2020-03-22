@@ -4,15 +4,15 @@ namespace MyMvc.Core
 {
     public interface IMiddleware
     {
-        IMiddleware Next { get; set; }
+        //It's not a real chain of responsibility but it's fundamental is that.
         Task Run(HttpContext httpContext);
     }
     public static class MiddlewareExtensions
     {
         public static async Task Invoke(this IMiddleware middleware, HttpContext httpContext)
         {
-            if (middleware.Next != null)
-                await middleware.Next.Run(httpContext);
+            httpContext.MiddlewareIndex++;
+            await MyDIMvc.Instance.ApplicationStarter.Next(httpContext);
         }
     }
 }

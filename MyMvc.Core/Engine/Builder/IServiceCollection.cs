@@ -15,4 +15,10 @@ namespace MyMvc.Core
         void AddTransient<TService>();
         void AddTransient<TInterface, TService>();
     }
+    public interface IServiceFactory 
+    {
+        dynamic GetService(Type type);
+        T GetService<T>();
+        bool HasService(Type type);
+    }
 }

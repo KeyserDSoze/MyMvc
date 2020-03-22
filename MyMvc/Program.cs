@@ -1,12 +1,17 @@
-﻿using System;
+﻿using MyMvc.Core;
+using System;
 
 namespace MyMvc
 {
     class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            CreateHostBuilder<HostBuilder>().Build().Run();
         }
+        //injected from the superior framework
+        public static IHostBuilder CreateHostBuilder<T>()
+            where T : IHostBuilder, new()
+            => new T().UseStartup<Startup>();
     }
 }

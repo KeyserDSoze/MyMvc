@@ -8,5 +8,11 @@ namespace MyMvc.Core
     {
         public HttpRequest Request { get; }
         public HttpResponse Response { get; }
+        internal int MiddlewareIndex { get; set; } = 0;
+        internal HttpContext(HttpRequest request, HttpResponse response)
+        {
+            this.Request = request;
+            this.Response = response;
+        }
     }
 }

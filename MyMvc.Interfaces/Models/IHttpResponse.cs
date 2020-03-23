@@ -7,6 +7,7 @@ namespace MyMvc.Interfaces
     public interface IHttpResponse
     {
         string ContentType { get; set; }
+#pragma warning disable CA1819
         byte[] Body { get; set; }
         string AcceptRanges { get; set; }
         int? CacheControl { get; set; }

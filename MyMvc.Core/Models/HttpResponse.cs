@@ -10,6 +10,7 @@ namespace MyMvc.Core
     public class HttpResponse : IHttpResponse
     {
         public string ContentType { get; set; } = "text/plain";
+#pragma warning disable CA1819
         public byte[] Body { get; set; }
         public string AcceptRanges { get; set; } = "bytes";
         public int? CacheControl { get; set; }

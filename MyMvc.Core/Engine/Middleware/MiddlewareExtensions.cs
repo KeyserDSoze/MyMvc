@@ -8,6 +8,7 @@ namespace MyMvc.Core
 {
     public static class MiddlewareExtensions
     {
+#pragma warning disable IDE0060
         public static async Task NextInvoke(this IMiddleware middleware, IHttpContext httpContext)
         {
             (httpContext as HttpContext).MiddlewareIndex++;

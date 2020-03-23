@@ -11,7 +11,7 @@ namespace MyMvc.Core
     public class AsynchronousSocketListener : IHttpListener
     {
         // Thread signal.  
-        private static ManualResetEvent allDone = new ManualResetEvent(false);
+        private static readonly ManualResetEvent AllDone = new ManualResetEvent(false);
         private readonly IDIMvc DIMvc;
         public AsynchronousSocketListener(IDIMvc dIMvc)
             => this.DIMvc = dIMvc;
@@ -33,19 +33,19 @@ namespace MyMvc.Core
             while (true)
             {
                 // Set the event to nonsignaled state.  
-                allDone.Reset();
+                AllDone.Reset();
                 // Start an asynchronous socket to listen for connections.  
                 listener.BeginAccept(
                     new AsyncCallback(AcceptCallback),
                     listener);
                 // Wait until a connection is made before continuing.  
-                allDone.WaitOne();
+                AllDone.WaitOne();
             }
         }
         private void AcceptCallback(IAsyncResult ar)
         {
             // Signal the main thread to continue.  
-            allDone.Set();
+            AllDone.Set();
             // Get the socket that handles the client request.  
             Socket listener = (Socket)ar.AsyncState;
             Socket handler = listener.EndAccept(ar);
@@ -95,6 +95,7 @@ namespace MyMvc.Core
             byte[] responseAsByte = httpContext.Response.Fetch();
             handler.BeginSend(responseAsByte, 0, responseAsByte.Length, 0, new AsyncCallback(SendCallback), handler);
         }
+#pragma warning disable CA1031
         private void SendCallback(IAsyncResult ar)
         {
             try

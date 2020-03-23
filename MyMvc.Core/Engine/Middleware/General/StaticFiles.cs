@@ -18,7 +18,7 @@ namespace MyMvc.Core
                 httpContext.Response.Body = await File.ReadAllBytesAsync($"{Environment.CurrentDirectory}/StaticFiles/favicon.ico");
             }
             else
-                await this.Invoke(httpContext);
+                await this.NextInvoke(httpContext);
         }
     }
 }

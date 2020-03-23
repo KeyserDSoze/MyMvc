@@ -17,6 +17,7 @@ namespace MyMvc.Core
         private static IDIMvc Me;
         public static IDIMvc Instance => Me ??= new MyDIMvc();
         private MyDIMvc() { }
+
         private IApplicationBuilder applicationBuilder;
         public IApplicationBuilder ApplicationBuilder => applicationBuilder ??= new ApplicationBuilder(this);
         public IApplicationStarter ApplicationStarter => this.ApplicationBuilder as IApplicationStarter;

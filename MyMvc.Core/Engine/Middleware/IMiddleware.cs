@@ -9,7 +9,7 @@ namespace MyMvc.Core
     }
     public static class MiddlewareExtensions
     {
-        public static async Task Invoke(this IMiddleware middleware, HttpContext httpContext)
+        public static async Task NextInvoke(this IMiddleware middleware, HttpContext httpContext)
         {
             httpContext.MiddlewareIndex++;
             await MyDIMvc.Instance.ApplicationStarter.Next(httpContext);

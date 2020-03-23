@@ -17,7 +17,7 @@ namespace MyMvc.MyMiddleware
         public async Task Run(HttpContext httpContext)
         {
             Console.WriteLine(MyFirstService.Value);
-            await this.Invoke(httpContext);
+            await this.NextInvoke(httpContext);
         }
     }
 }

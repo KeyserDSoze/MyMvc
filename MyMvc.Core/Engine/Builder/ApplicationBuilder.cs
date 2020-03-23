@@ -18,7 +18,7 @@ namespace MyMvc.Core
         public async Task Next(HttpContext httpContext)
         {
             if (httpContext.MiddlewareIndex < Middlewares.Count)
-                await Middlewares[httpContext.MiddlewareIndex].Middleware(httpContext).Invoke(httpContext);
+                await Middlewares[httpContext.MiddlewareIndex].Middleware(httpContext).Run(httpContext);
         }
     }
     internal interface IMiddlewareWrapper

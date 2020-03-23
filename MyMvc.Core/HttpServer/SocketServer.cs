@@ -113,9 +113,9 @@ namespace MyMvc.Core
         {
             // Begin sending the data to the remote device.
             // Do something with bytesData
-            HttpResponse response = new HttpResponse();
-            this.DIMvc.ApplicationStarter.Next(new HttpContext(new HttpRequest(byteData), response));
-            byte[] responseAsByte = response.Fetch();
+            HttpContext httpContext = new HttpContext(new HttpRequest(byteData), new HttpResponse());
+            this.DIMvc.ApplicationStarter.Next(httpContext);
+            byte[] responseAsByte = httpContext.Response.Fetch();
             handler.BeginSend(responseAsByte, 0, responseAsByte.Length, 0, new AsyncCallback(SendCallback), handler);
         }
 

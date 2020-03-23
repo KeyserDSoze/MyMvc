@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace MyMvc.Core
@@ -66,8 +67,23 @@ namespace MyMvc.Core
                     throw new NotImplementedException($"Added a service type without implementation --> {serviceWrapper.ServiceType}");
             }
         }
+
+        private static readonly Dictionary<Type, MethodInfo> GetServiceMethods = new Dictionary<Type, MethodInfo>();
+        private static readonly object ServiceTrafficLight = new object();
         public dynamic GetService(Type type, HttpContext httpContext)
-            => this.GetType().GetMethod("GetService").MakeGenericMethod(type).Invoke(this, new object[1] { httpContext });
+        {
+            if (!GetServiceMethods.ContainsKey(type))
+            {
+                lock (ServiceTrafficLight)
+                {
+                    if (!GetServiceMethods.ContainsKey(type))
+                    {
+                        GetServiceMethods.Add(type, this.GetType().GetMethods().FirstOrDefault(x => x.Name == "GetService" && x.IsGenericMethod).MakeGenericMethod(type));
+                    }
+                }
+            }
+            return GetServiceMethods[type].Invoke(this, new object[1] { httpContext });
+        }
         public bool HasService(Type type)
             => Services.ContainsKey(type);
     }

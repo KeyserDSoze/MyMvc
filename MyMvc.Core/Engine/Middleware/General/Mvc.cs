@@ -11,7 +11,7 @@ namespace MyMvc.Core
         public async Task Run(HttpContext httpContext)
         {
             httpContext.Response.Body = Encoding.ASCII.GetBytes($"<div>Hello World {DateTime.UtcNow}!!!</div>");
-            await this.Invoke(httpContext);
+            await this.NextInvoke(httpContext);
         }
     }
 }

@@ -9,4 +9,10 @@
     <ProjectReference Include="..\MyMvc.Core\MyMvc.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="StaticFiles\favicon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

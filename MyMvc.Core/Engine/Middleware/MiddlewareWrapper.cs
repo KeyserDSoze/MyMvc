@@ -8,7 +8,7 @@ namespace MyMvc.Core
     internal class MiddlewareWrapper<T> : IMiddlewareWrapper
        where T : IMiddleware
     {
-        private IServiceFactory ServiceFactory;
+        private readonly IServiceFactory ServiceFactory;
         public IMiddleware Middleware(IHttpContext httpContext)
             => this.ServiceFactory.GetService<T>(httpContext);
         public MiddlewareWrapper(IServiceFactory serviceFactory)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyMvc.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -7,27 +8,11 @@ using System.Threading;
 
 namespace MyMvc.Core
 {
-    // State object for reading client data asynchronously  
-    public class StateObject
-    {
-        // Client  socket.  
-        public Socket workSocket = null;
-        // Size of receive buffer.  
-        public const int BufferSize = 1024;
-        // Receive buffer.  
-        public byte[] Buffer = new byte[BufferSize];
-        public List<byte> Data = new List<byte>();
-        public const byte Zero = (byte)'\0';
-    }
-    public interface IHttpListener
-    {
-        void StartListening();
-    }
     public class AsynchronousSocketListener : IHttpListener
     {
         // Thread signal.  
-        public static ManualResetEvent allDone = new ManualResetEvent(false);
-        private IDIMvc DIMvc;
+        private static ManualResetEvent allDone = new ManualResetEvent(false);
+        private readonly IDIMvc DIMvc;
         public AsynchronousSocketListener(IDIMvc dIMvc)
             => this.DIMvc = dIMvc;
         public void StartListening()
@@ -37,35 +22,27 @@ namespace MyMvc.Core
             // running the listener is "host.contoso.com".  
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList[2];
-            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
+            int port = 11000;
+            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, port);
             // Create a TCP/IP socket.  
             Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             // Bind the socket to the local endpoint and listen for incoming connections.  
-            try
+            listener.Bind(localEndPoint);
+            listener.Listen(100);
+            Console.WriteLine($"Listening on {ipAddress}:{port}");
+            while (true)
             {
-                listener.Bind(localEndPoint);
-                listener.Listen(100);
-                while (true)
-                {
-                    // Set the event to nonsignaled state.  
-                    allDone.Reset();
-                    // Start an asynchronous socket to listen for connections.  
-                    listener.BeginAccept(
-                        new AsyncCallback(AcceptCallback),
-                        listener);
-                    // Wait until a connection is made before continuing.  
-                    allDone.WaitOne();
-                }
+                // Set the event to nonsignaled state.  
+                allDone.Reset();
+                // Start an asynchronous socket to listen for connections.  
+                listener.BeginAccept(
+                    new AsyncCallback(AcceptCallback),
+                    listener);
+                // Wait until a connection is made before continuing.  
+                allDone.WaitOne();
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-            Console.WriteLine("\nPress ENTER to continue...");
-            Console.Read();
         }
-
-        public void AcceptCallback(IAsyncResult ar)
+        private void AcceptCallback(IAsyncResult ar)
         {
             // Signal the main thread to continue.  
             allDone.Set();
@@ -74,12 +51,13 @@ namespace MyMvc.Core
             Socket handler = listener.EndAccept(ar);
 
             // Create the state object.  
-            StateObject state = new StateObject();
-            state.workSocket = handler;
+            StateObject state = new StateObject
+            {
+                workSocket = handler
+            };
             handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
         }
-
-        public void ReadCallback(IAsyncResult ar)
+        private void ReadCallback(IAsyncResult ar)
         {
             // Retrieve the state object and the handler socket  
             // from the asynchronous state object.  
@@ -94,7 +72,7 @@ namespace MyMvc.Core
                 state.Data.AddRange(state.Buffer);
                 // Check for end-of-file tag. If it is not there, read   
                 // more data.  
-                if (state.Buffer[state.Buffer.Length - 1] == StateObject.Zero)
+                if (state.Buffer[^1] == StateObject.Zero)
                 {
                     // All the data has been read from the   
                     // Echo the data back to the client.  
@@ -108,7 +86,6 @@ namespace MyMvc.Core
                 }
             }
         }
-
         private void Send(Socket handler, byte[] byteData)
         {
             // Begin sending the data to the remote device.
@@ -118,8 +95,7 @@ namespace MyMvc.Core
             byte[] responseAsByte = httpContext.Response.Fetch();
             handler.BeginSend(responseAsByte, 0, responseAsByte.Length, 0, new AsyncCallback(SendCallback), handler);
         }
-
-        private static void SendCallback(IAsyncResult ar)
+        private void SendCallback(IAsyncResult ar)
         {
             try
             {
@@ -134,6 +110,21 @@ namespace MyMvc.Core
             {
                 Console.WriteLine(e.ToString());
             }
+        }
+
+        /// <summary>
+        ///  State object for reading client data asynchronously
+        /// </summary>
+        private class StateObject
+        {
+            // Client  socket.  
+            public Socket workSocket = null;
+            // Size of receive buffer.  
+            public const int BufferSize = 1024;
+            // Receive buffer.  
+            public byte[] Buffer = new byte[BufferSize];
+            public List<byte> Data = new List<byte>();
+            public const byte Zero = (byte)'\0';
         }
     }
 }

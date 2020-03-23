@@ -23,8 +23,7 @@ namespace MyMvc.Core
         public IApplicationBuilder ApplicationBuilder => applicationBuilder ??= new ApplicationBuilder(this);
         public IApplicationStarter ApplicationStarter => this.ApplicationBuilder as IApplicationStarter;
 
-        private IServiceCollection serviceCollection;
-        public IServiceCollection ServiceCollection => serviceCollection ??= new ServiceCollection(this);
+        public IServiceCollection ServiceCollection { get; } = new ServiceCollection();
         public IServiceFactory ServiceFactory => this.ServiceCollection as IServiceFactory;
 
         private IHttpListener httpListener;

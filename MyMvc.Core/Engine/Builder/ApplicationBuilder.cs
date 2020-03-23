@@ -8,7 +8,7 @@ namespace MyMvc.Core
 {
     public class ApplicationBuilder : IApplicationBuilder, IApplicationStarter
     {
-        private IDIMvc DIMvc;
+        private readonly IDIMvc DIMvc;
         public ApplicationBuilder(IDIMvc dIMvc)
             => this.DIMvc = dIMvc;
 

@@ -10,9 +10,6 @@ namespace MyMvc.Core
     public partial class ServiceCollection : IServiceCollection
     {
         private static readonly Dictionary<string, IServiceWrapper> ServicesByName = new Dictionary<string, IServiceWrapper>();
-        private IDIMvc DIMvc;
-        public ServiceCollection(IDIMvc dIMvc)
-            => this.DIMvc = dIMvc;
         public void AddService<TService>(ServiceType serviceType)
            => this.AddService<TService, TService>(serviceType);
         public void AddService<TInterface, TService>(ServiceType serviceType)

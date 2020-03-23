@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 
 namespace MyMvc.Interfaces
 {
@@ -8,5 +9,6 @@ namespace MyMvc.Interfaces
         string HttpProtocol { get; }
         HttpUrl Url { get; }
         IPAddress IpAddress { get; }
+        Dictionary<string, string> Headers { get; }
     }
 }

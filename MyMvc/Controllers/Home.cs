@@ -9,11 +9,11 @@ namespace MyMvc.Controllers
 {
     public class Home : Controller
     {
-        private MyFirstService MyFirstService;
-        private MyFirstService MyFirstServiceServiceSecondInstance;
-        private MySecondService MySecondService;
-        private IMyThirdService MyThirdService;
-        private IMyThirdService MyThirdServiceSecondInstance;
+        private readonly MyFirstService MyFirstService;
+        private readonly MyFirstService MyFirstServiceServiceSecondInstance;
+        private readonly MySecondService MySecondService;
+        private readonly IMyThirdService MyThirdService;
+        private readonly IMyThirdService MyThirdServiceSecondInstance;
         public Home(MyFirstService myFirstService, MyFirstService myFirstServiceSecondInstance, MySecondService mySecondService, IMyThirdService myThirdService, IMyThirdService myThirdServiceSecondInstance)
         {
             this.MyFirstService = myFirstService;

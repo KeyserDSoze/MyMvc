@@ -8,7 +8,7 @@ namespace MyMvc.MyMiddleware
 {
     public class MyFirstMiddleware : IMiddleware
     {
-        private MyFirstService MyFirstService;
+        private readonly MyFirstService MyFirstService;
         public MyFirstMiddleware(MyFirstService myFirstService)
         {
             this.MyFirstService = myFirstService;

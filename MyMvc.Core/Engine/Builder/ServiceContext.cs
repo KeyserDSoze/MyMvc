@@ -6,7 +6,7 @@ namespace MyMvc.Core
 {
     public class ServiceContext : IServiceContext
     {
-        private static Dictionary<string, dynamic> singletoned = new Dictionary<string, dynamic>(); //Singleton
+        private static readonly Dictionary<string, dynamic> singletoned = new Dictionary<string, dynamic>(); //Singleton
         internal Dictionary<string, dynamic> Singletoned => singletoned;
         internal Dictionary<string, dynamic> Scoped { get; } = new Dictionary<string, dynamic>(); //FlyWeight
         public IServiceFactory Collection { get; }

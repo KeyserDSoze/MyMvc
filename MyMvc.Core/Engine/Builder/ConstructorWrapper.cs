@@ -42,16 +42,6 @@ namespace MyMvc.Core
             return Constructors[typeToCreate];
         }
         public T Create<T>(IHttpContext httpContext)
-        {
-            try
-            {
-                return (T)this.ConstructorInfo.Invoke(this.Types.Select(x => MyDIMvc.Instance.ServiceFactory.GetService(x, httpContext)).ToArray());
-            }
-            catch (Exception ex)
-            {
-                string olaf = ex.ToString();
-                return default;
-            }
-        }
+            => (T)this.ConstructorInfo.Invoke(this.Types.Select(x => MyDIMvc.Instance.ServiceFactory.GetService(x, httpContext)).ToArray());
     }
 }

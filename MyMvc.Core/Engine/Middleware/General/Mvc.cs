@@ -15,11 +15,28 @@ namespace MyMvc.Core
             string[] splitter = httpContext.Request.Url.Path.Split('/');
             string controllerName = splitter.Length > 1 ? splitter[1] : "Home";
             string actionName = splitter.Length > 2 ? splitter[2] : "Index";
-            object controller = httpContext.Service.Collection.FindService($".Controllers.{controllerName}", httpContext);
-            IActionResult result = controller.GetType().GetMethod(actionName).Invoke(controller, null) as IActionResult; //here the parameters for example instead null
+            IController controller = httpContext.Service.Collection.FindService($".Controllers.{controllerName}", httpContext);
+            IActionResult result = GetMethod(controller, controllerName, actionName).Invoke(controller, null) as IActionResult; //here the parameters for example instead null
             httpContext.Response.Body = Encoding.ASCII.GetBytes(result.Response);
             httpContext.Response.ContentType = result.ContentType;
             await this.NextInvoke(httpContext);
+        }
+        private static readonly Dictionary<string, MethodInfo> Methods = new Dictionary<string, MethodInfo>();
+        private static readonly object TrafficLight = new object();
+        private MethodInfo GetMethod(IController controller, string controllerName, string actionName)
+        {
+            string key = $"{controllerName}/{actionName}";
+            if (!Methods.ContainsKey(key))
+            {
+                lock (TrafficLight)
+                {
+                    if (!Methods.ContainsKey(key))
+                    {
+                        Methods.Add(key, controller.GetType().GetMethod(actionName));
+                    }
+                }
+            }
+            return Methods[key];
         }
     }
 }

@@ -1,15 +1,10 @@
-﻿using System;
+﻿using MyMvc.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace MyMvc.Core
 {
-    public interface IHostBuilder
-    {
-        IHostBuilder UseStartup<T>() where T : IStartup, new();
-        IHostBuilder Build();
-        void Run();
-    }
     public class HostBuilder : IHostBuilder
     {
         private IStartup Startup;

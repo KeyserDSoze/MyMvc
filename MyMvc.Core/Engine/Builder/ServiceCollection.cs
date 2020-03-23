@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyMvc.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -35,7 +36,7 @@ namespace MyMvc.Core
     public partial class ServiceCollection : IServiceFactory
     {
         private static readonly object TrafficLight = new object(); //trafficlight for lock during singleton
-        public T GetService<T>(HttpContext httpContext)
+        public T GetService<T>(IHttpContext httpContext)
         {
             Type typeToCreate = typeof(T);
             if (!Services.ContainsKey(typeToCreate))
@@ -70,7 +71,7 @@ namespace MyMvc.Core
 
         private static readonly Dictionary<Type, MethodInfo> GetServiceMethods = new Dictionary<Type, MethodInfo>();
         private static readonly object ServiceTrafficLight = new object();
-        public dynamic GetService(Type type, HttpContext httpContext)
+        public dynamic GetService(Type type, IHttpContext httpContext)
         {
             if (!GetServiceMethods.ContainsKey(type))
             {

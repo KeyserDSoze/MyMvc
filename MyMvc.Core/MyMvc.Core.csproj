@@ -8,4 +8,8 @@
     <Folder Include="Engine\Mvc\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MyMvc.Interfaces\MyMvc.Interfaces.csproj" />
+  </ItemGroup>
+
 </Project>

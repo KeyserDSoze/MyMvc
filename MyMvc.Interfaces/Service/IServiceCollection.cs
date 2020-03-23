@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace MyMvc.Core
+namespace MyMvc.Interfaces
 {
     public interface IServiceCollection
     {
@@ -17,8 +15,8 @@ namespace MyMvc.Core
     }
     public interface IServiceFactory 
     {
-        dynamic GetService(Type type, HttpContext httpContext);
-        T GetService<T>(HttpContext httpContext);
+        dynamic GetService(Type type, IHttpContext httpContext);
+        T GetService<T>(IHttpContext httpContext);
         bool HasService(Type type);
     }
 }

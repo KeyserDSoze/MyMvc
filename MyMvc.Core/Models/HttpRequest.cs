@@ -1,11 +1,13 @@
-﻿using System;
+﻿using MyMvc.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
 
 namespace MyMvc.Core
 {
-    public class HttpRequest
+   
+    public class HttpRequest : IHttpRequest
     {
         public string Method { get; }
         public string HttpProtocol { get; }

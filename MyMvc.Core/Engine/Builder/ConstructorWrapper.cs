@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyMvc.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -41,7 +42,7 @@ namespace MyMvc.Core
             }
             return Constructors[typeToCreate];
         }
-        public T Create<T>(HttpContext httpContext)
+        public T Create<T>(IHttpContext httpContext)
             => (T)this.ConstructorInfo.Invoke(this.Types.Select(x => MyDIMvc.Instance.ServiceFactory.GetService(x, httpContext)).ToArray());
     }
 }

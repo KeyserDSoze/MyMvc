@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyMvc.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,23 +16,11 @@ namespace MyMvc.Core
         public void UseMiddleware<TMiddleware>() where TMiddleware : IMiddleware
             => Middlewares.Add(new MiddlewareWrapper<TMiddleware>(this.DIMvc.ServiceFactory));
 
-        public async Task Next(HttpContext httpContext)
+        public async Task Next(IHttpContext httpContext)
         {
-            if (httpContext.MiddlewareIndex < Middlewares.Count)
-                await Middlewares[httpContext.MiddlewareIndex].Middleware(httpContext).Run(httpContext);
+            HttpContext myHttpContext = httpContext as HttpContext;
+            if (myHttpContext.MiddlewareIndex < Middlewares.Count)
+                await Middlewares[myHttpContext.MiddlewareIndex].Middleware(httpContext).Run(httpContext);
         }
-    }
-    internal interface IMiddlewareWrapper
-    {
-        IMiddleware Middleware(HttpContext httpContext);
-    }
-    internal class MiddlewareWrapper<T> : IMiddlewareWrapper
-        where T : IMiddleware
-    {
-        private IServiceFactory ServiceFactory;
-        public IMiddleware Middleware(HttpContext httpContext) 
-            => this.ServiceFactory.GetService<T>(httpContext);
-        public MiddlewareWrapper(IServiceFactory serviceFactory)
-            => this.ServiceFactory = serviceFactory;
     }
 }

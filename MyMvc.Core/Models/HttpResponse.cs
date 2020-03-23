@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyMvc.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,14 +7,14 @@ using System.Text;
 namespace MyMvc.Core
 {
     //https://www.w3.org/Protocols/HTTP/1.0/spec.html#Response
-    public class HttpResponse
+    public class HttpResponse : IHttpResponse
     {
         public string ContentType { get; set; } = "text/plain";
         public byte[] Body { get; set; }
         public string AcceptRanges { get; set; } = "bytes";
         public int? CacheControl { get; set; }
         public int StatusCode { get; set; } = 200;
-        internal byte[] Fetch()
+        public byte[] Fetch()
             => this.Body == null ? GetHeader() : GetHeader().Concat(this.Body).ToArray();
         private byte[] GetHeader()
         {

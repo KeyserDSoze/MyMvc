@@ -1,8 +1,7 @@
 ﻿using MyMvc.Core;
+using MyMvc.Interfaces;
 using MyMvc.MyService;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MyMvc.MyMiddleware
@@ -14,7 +13,7 @@ namespace MyMvc.MyMiddleware
         {
             this.MyFirstService = myFirstService;
         }
-        public async Task Run(HttpContext httpContext)
+        public async Task Run(IHttpContext httpContext)
         {
             Console.WriteLine(MyFirstService.Value);
             await this.NextInvoke(httpContext);

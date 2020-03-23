@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MyMvc.Core
+﻿namespace MyMvc.Interfaces
 {
     public enum ServiceType
     {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyMvc.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -9,7 +10,7 @@ namespace MyMvc.Core
     public class StaticFiles : IMiddleware
     {
         public IMiddleware Next { get; set; }
-        public async Task Run(HttpContext httpContext)
+        public async Task Run(IHttpContext httpContext)
         {
             if (httpContext.Request.Url.Path == "/favicon.ico")
             {

@@ -1,0 +1,3 @@
+﻿@model string
+
+<div style="font-size:80px;color:red;font-family:Arial;">@Model</div>

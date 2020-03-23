@@ -17,7 +17,7 @@ namespace MyMvc
             serviceCollection.AddSingleton<MySecondService>();
             serviceCollection.AddTransient<IMyThirdService, MyThirdService>();
             serviceCollection.AddScoped<MyFirstMiddleware>();
-            serviceCollection.AddScoped<Home>();
+            serviceCollection.AddMvc(this);
         }
         public void Configure(IApplicationBuilder applicationBuilder)
         {

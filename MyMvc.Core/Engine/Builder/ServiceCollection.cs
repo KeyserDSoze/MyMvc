@@ -9,14 +9,20 @@ namespace MyMvc.Core
 {
     public partial class ServiceCollection : IServiceCollection
     {
-        private static readonly Dictionary<Type, IServiceWrapper> Services = new Dictionary<Type, IServiceWrapper>();
+        private static readonly Dictionary<string, IServiceWrapper> ServicesByName = new Dictionary<string, IServiceWrapper>();
         private IDIMvc DIMvc;
         public ServiceCollection(IDIMvc dIMvc)
             => this.DIMvc = dIMvc;
         public void AddService<TService>(ServiceType serviceType)
            => this.AddService<TService, TService>(serviceType);
         public void AddService<TInterface, TService>(ServiceType serviceType)
-            => Services.Add(typeof(TInterface), new ServiceWrapper<TService>(serviceType));
+        {
+            string key = typeof(TInterface).GetKey();
+            if (!ServicesByName.ContainsKey(key))
+                ServicesByName.Add(key, new ServiceWrapper<TInterface>(serviceType, typeof(TService)));
+            else
+                throw new ArgumentException($"Too many services with same name for {typeof(TInterface).AssemblyQualifiedName}, service is {typeof(TService).AssemblyQualifiedName}");
+        }
 
         public void AddSingleton<TService>()
             => this.AddSingleton<TService, TService>();
@@ -38,30 +44,30 @@ namespace MyMvc.Core
         private static readonly object TrafficLight = new object(); //trafficlight for lock during singleton
         public T GetService<T>(IHttpContext httpContext)
         {
-            Type typeToCreate = typeof(T);
-            if (!Services.ContainsKey(typeToCreate))
-                throw new ArgumentNullException($"{typeToCreate} doesn't add to service collection.");
+            string key = typeof(T).GetKey();
+            if (!ServicesByName.ContainsKey(key))
+                throw new ArgumentNullException($"{key} doesn't add to service collection.");
 
             ServiceContext serviceContext = httpContext.Service as ServiceContext;
-            IServiceWrapper<T> serviceWrapper = Services[typeToCreate] as IServiceWrapper<T>;
+            IServiceWrapper<T> serviceWrapper = ServicesByName[key] as IServiceWrapper<T>;
             switch (serviceWrapper.ServiceType)
             {
                 case ServiceType.Singleton:
-                    if (!serviceContext.Singletoned.ContainsKey(typeToCreate))
+                    if (!serviceContext.Singletoned.ContainsKey(key))
                     {
                         lock (TrafficLight)
                         {
-                            if (!serviceContext.Singletoned.ContainsKey(typeToCreate))
+                            if (!serviceContext.Singletoned.ContainsKey(key))
                             {
-                                serviceContext.Singletoned.Add(typeToCreate, serviceWrapper.Create(httpContext));
+                                serviceContext.Singletoned.Add(key, serviceWrapper.Create(httpContext));
                             }
                         }
                     }
-                    return serviceContext.Singletoned[typeToCreate];
+                    return serviceContext.Singletoned[key];
                 case ServiceType.Scoped:
-                    if (!serviceContext.Scoped.ContainsKey(typeToCreate))
-                        serviceContext.Scoped.Add(typeToCreate, serviceWrapper.Create(httpContext));
-                    return serviceContext.Scoped[typeToCreate];
+                    if (!serviceContext.Scoped.ContainsKey(key))
+                        serviceContext.Scoped.Add(key, serviceWrapper.Create(httpContext));
+                    return serviceContext.Scoped[key];
                 case ServiceType.Transient:
                     return serviceWrapper.Create(httpContext);
                 default:
@@ -69,23 +75,33 @@ namespace MyMvc.Core
             }
         }
 
-        private static readonly Dictionary<Type, MethodInfo> GetServiceMethods = new Dictionary<Type, MethodInfo>();
+        private static readonly Dictionary<string, MethodInfo> GetServiceMethods = new Dictionary<string, MethodInfo>();
         private static readonly object ServiceTrafficLight = new object();
         public dynamic GetService(Type type, IHttpContext httpContext)
         {
-            if (!GetServiceMethods.ContainsKey(type))
+            string key = type.GetKey();
+            if (!GetServiceMethods.ContainsKey(key))
             {
                 lock (ServiceTrafficLight)
                 {
-                    if (!GetServiceMethods.ContainsKey(type))
+                    if (!GetServiceMethods.ContainsKey(key))
                     {
-                        GetServiceMethods.Add(type, this.GetType().GetMethods().FirstOrDefault(x => x.Name == "GetService" && x.IsGenericMethod).MakeGenericMethod(type));
+                        GetServiceMethods.Add(key, this.GetType().GetMethods().FirstOrDefault(x => x.Name == "GetService" && x.IsGenericMethod).MakeGenericMethod(type));
                     }
                 }
             }
-            return GetServiceMethods[type].Invoke(this, new object[1] { httpContext });
+            return GetServiceMethods[key].Invoke(this, new object[1] { httpContext });
         }
+        public dynamic GetService(string name, IHttpContext httpContext)
+            => GetService(ServicesByName[name].Type, httpContext);
+        public dynamic FindService(string notCompleteName, IHttpContext httpContext)
+            => GetService(ServicesByName.FirstOrDefault(x => x.Key.Contains(notCompleteName)).Value.Type, httpContext);
         public bool HasService(Type type)
-            => Services.ContainsKey(type);
+            => ServicesByName.ContainsKey(type.GetKey());
+    }
+    internal static class TypeExtensions
+    {
+        public static string GetKey(this Type type)
+            => type.AssemblyQualifiedName.Split(',').First();
     }
 }

@@ -1,6 +1,9 @@
 ﻿using MyMvc.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace MyMvc.Core
@@ -18,7 +21,7 @@ namespace MyMvc.Core
             //preconfigured services, similar to ILog or etc.
             MyDIMvc.Instance.ServiceCollection.AddSingleton<StaticFiles>();
             MyDIMvc.Instance.ServiceCollection.AddScoped<Mvc>();
-            //Add Controller as Services here
+            //Add Controller as Services here as Scoped service
             this.Startup.ConfigureServices(MyDIMvc.Instance.ServiceCollection);
             this.Startup.Configure(MyDIMvc.Instance.ApplicationBuilder);
             return this;

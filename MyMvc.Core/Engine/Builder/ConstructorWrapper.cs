@@ -17,9 +17,8 @@ namespace MyMvc.Core
             this.ConstructorInfo = constructorInfo;
             this.Types = types;
         }
-        public static ConstructorWrapper GetRightConstructor<T>()
+        public static ConstructorWrapper GetRightConstructor(Type typeToCreate)
         {
-            Type typeToCreate = typeof(T);
             if (!Constructors.ContainsKey(typeToCreate))
             {
                 lock (TrafficLight)
@@ -43,6 +42,16 @@ namespace MyMvc.Core
             return Constructors[typeToCreate];
         }
         public T Create<T>(IHttpContext httpContext)
-            => (T)this.ConstructorInfo.Invoke(this.Types.Select(x => MyDIMvc.Instance.ServiceFactory.GetService(x, httpContext)).ToArray());
+        {
+            try
+            {
+                return (T)this.ConstructorInfo.Invoke(this.Types.Select(x => MyDIMvc.Instance.ServiceFactory.GetService(x, httpContext)).ToArray());
+            }
+            catch (Exception ex)
+            {
+                string olaf = ex.ToString();
+                return default;
+            }
+        }
     }
 }

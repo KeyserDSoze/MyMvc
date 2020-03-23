@@ -7,5 +7,9 @@ namespace MyMvc.Core
 {
     public class HtmlAction : IActionResult
     {
+        public string Response { get; }
+        public string ContentType { get; } = "text/html";
+        public HtmlAction(string response)
+            => this.Response = response;
     }
 }

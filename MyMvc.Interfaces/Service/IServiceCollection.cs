@@ -13,10 +13,12 @@ namespace MyMvc.Interfaces
         void AddTransient<TService>();
         void AddTransient<TInterface, TService>();
     }
-    public interface IServiceFactory 
+    public interface IServiceFactory
     {
         dynamic GetService(Type type, IHttpContext httpContext);
         T GetService<T>(IHttpContext httpContext);
+        dynamic GetService(string name, IHttpContext httpContext);
+        dynamic FindService(string notCompleteName, IHttpContext httpContext);
         bool HasService(Type type);
     }
 }

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace MyMvc.Core
 {
-    public class Controller : IController
+    public abstract class Controller : IController
     {
         public IHttpContext HttpContext { get; internal set; }
         private static readonly Dictionary<string, string[]> Pages = new Dictionary<string, string[]>();
@@ -27,7 +27,7 @@ namespace MyMvc.Core
                 else
                     response.AppendLine(line);
             }
-            return new HtmlAction();
+            return new HtmlAction(response.ToString());
         }
         private string[] GetPage(string controller, string action)
         {
@@ -38,7 +38,7 @@ namespace MyMvc.Core
                 {
                     if (!Pages.ContainsKey(key))
                     {
-                        Pages.Add(key, File.ReadAllLines($"{Environment.CurrentDirectory}/Views/{key}.txt"));
+                        Pages.Add(key, File.ReadAllLines(@$"{Environment.CurrentDirectory}\Views\{key}.txt"));
                     }
                 }
             }

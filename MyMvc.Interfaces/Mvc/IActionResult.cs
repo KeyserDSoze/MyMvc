@@ -2,5 +2,7 @@
 {
     public interface IActionResult
     {
+        string Response { get; }
+        string ContentType { get; }
     }
 }

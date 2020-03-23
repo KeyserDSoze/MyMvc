@@ -16,7 +16,7 @@ namespace MyMvc.Core
     public class MyDIMvc : IDIMvc
     {
         private static IDIMvc Me;
-        public static IDIMvc Instance => Me ??= new MyDIMvc();
+        internal static IDIMvc Instance => Me ??= new MyDIMvc();
         private MyDIMvc() { }
 
         private IApplicationBuilder applicationBuilder;

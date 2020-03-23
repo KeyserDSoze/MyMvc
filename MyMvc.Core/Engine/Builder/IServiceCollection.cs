@@ -17,8 +17,8 @@ namespace MyMvc.Core
     }
     public interface IServiceFactory 
     {
-        dynamic GetService(Type type);
-        T GetService<T>();
+        dynamic GetService(Type type, HttpContext httpContext);
+        T GetService<T>(HttpContext httpContext);
         bool HasService(Type type);
     }
 }

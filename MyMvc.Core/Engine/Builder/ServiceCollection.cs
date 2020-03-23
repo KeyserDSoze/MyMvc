@@ -33,43 +33,42 @@ namespace MyMvc.Core
     }
     public partial class ServiceCollection : IServiceFactory
     {
-        private static Dictionary<Type, dynamic> Singletoned = new Dictionary<Type, dynamic>(); //Singleton
-        private Dictionary<Type, dynamic> Scoped = new Dictionary<Type, dynamic>(); //FlyWeight
         private static readonly object TrafficLight = new object(); //trafficlight for lock during singleton
-        public T GetService<T>()
+        public T GetService<T>(HttpContext httpContext)
         {
             Type typeToCreate = typeof(T);
             if (!Services.ContainsKey(typeToCreate))
                 throw new ArgumentNullException($"{typeToCreate} doesn't add to service collection.");
 
+            ServiceContext serviceContext = httpContext.Service as ServiceContext;
             IServiceWrapper<T> serviceWrapper = Services[typeToCreate] as IServiceWrapper<T>;
             switch (serviceWrapper.ServiceType)
             {
                 case ServiceType.Singleton:
-                    if (!Singletoned.ContainsKey(typeToCreate))
+                    if (!serviceContext.Singletoned.ContainsKey(typeToCreate))
                     {
                         lock (TrafficLight)
                         {
-                            if (!Singletoned.ContainsKey(typeToCreate))
+                            if (!serviceContext.Singletoned.ContainsKey(typeToCreate))
                             {
-                                Singletoned.Add(typeToCreate, serviceWrapper.Create());
+                                serviceContext.Singletoned.Add(typeToCreate, serviceWrapper.Create(httpContext));
                             }
                         }
                     }
-                    return Singletoned[typeToCreate];
+                    return serviceContext.Singletoned[typeToCreate];
                 case ServiceType.Scoped:
-                    if (!Scoped.ContainsKey(typeToCreate))
-                        Scoped.Add(typeToCreate, serviceWrapper.Create());
-                    return Scoped[typeToCreate];
+                    if (!serviceContext.Scoped.ContainsKey(typeToCreate))
+                        serviceContext.Scoped.Add(typeToCreate, serviceWrapper.Create(httpContext));
+                    return serviceContext.Scoped[typeToCreate];
                 case ServiceType.Transient:
-                    return serviceWrapper.Create();
+                    return serviceWrapper.Create(httpContext);
                 default:
                     throw new NotImplementedException($"Added a service type without implementation --> {serviceWrapper.ServiceType}");
             }
         }
-        public dynamic GetService(Type type) 
-            => this.GetType().GetMethod("GetService").MakeGenericMethod(type).Invoke(this, null);
-        public bool HasService(Type type) 
+        public dynamic GetService(Type type, HttpContext httpContext)
+            => this.GetType().GetMethod("GetService").MakeGenericMethod(type).Invoke(this, new object[1] { httpContext });
+        public bool HasService(Type type)
             => Services.ContainsKey(type);
     }
 }

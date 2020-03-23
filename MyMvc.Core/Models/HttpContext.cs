@@ -8,11 +8,13 @@ namespace MyMvc.Core
     {
         public HttpRequest Request { get; }
         public HttpResponse Response { get; }
+        public IServiceContext Service { get; }
         internal int MiddlewareIndex { get; set; } = 0;
         internal HttpContext(HttpRequest request, HttpResponse response)
         {
             this.Request = request;
             this.Response = response;
+            this.Service = new ServiceContext(MyDIMvc.Instance.ServiceFactory);
         }
     }
 }
